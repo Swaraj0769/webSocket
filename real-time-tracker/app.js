@@ -9,10 +9,20 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 app.set('view engine', "ejs");
-app.set(express.static(path.join(__dirname, "public")))
+// Serve static files from the 'public' directory
+app.use('/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
+
+// Or if your CSS is in a 'static' folder:
+app.use(express.static('public'));
 
 io.on('connection', function(socket){
-    console.log("connected");
+    socket.on("send-location", function(data){
+        io.emit("receive-location", {id: socket.id, ...data});
+    })
+    socket.on("disconnect", function(){
+        io.emit("user-disconnected", socket.id)
+    })
 })
 
 app.get('/', function(req, res){
@@ -20,3 +30,4 @@ app.get('/', function(req, res){
 })
 
 server.listen(3000)
+
