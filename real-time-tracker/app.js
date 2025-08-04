@@ -3,10 +3,15 @@ const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
 
-const app= express()
+const cors = require('cors');
 
-const server = http.createServer(app)
-const io = socketio(server)
+const app = express();
+app.use(cors()); // allow frontend from other origins
+
+const server = http.createServer(app);
+const io = socketio(server, {
+  cors: { origin: "*" }
+});
 
 app.set('view engine', "ejs");
 // Serve static files from the 'public' directory
